@@ -10,21 +10,36 @@ import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 
-// CORS configuration - allow development and production URLs
+// Robust CORS configuration
+// - Uses FRONTEND_URL from env when set
+// - Allows a documented Vercel frontend fallback and localhost dev ports
+// - Allows non-browser requests (no origin)
+// - Returns a descriptive error when an origin is blocked
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = [
-        process.env.FRONTEND_URL,
+      // allow non-browser tools (Postman/curl) with no origin
+      if (!origin) return callback(null, true);
+
+      const configured = (process.env.FRONTEND_URL || "").trim();
+      const fallback = "https://api-testing-tool-frontend-umber.vercel.app";
+
+      const allowedOrigins = new Set([
+        configured,
+        fallback,
         'http://localhost:3000',
         'http://localhost:3001',
-        'http://localhost:3002'
-      ];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
+        'http://localhost:3002',
+        'http://127.0.0.1:3000'
+      ].filter(Boolean));
+
+      if (allowedOrigins.has(origin)) return callback(null, true);
+
+      // allow any localhost:PORT pattern
+      if (/^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) return callback(null, true);
+
+      const err = new Error(`CORS policy: origin '${origin}' is not allowed. Set FRONTEND_URL to allow it.`);
+      return callback(err);
     },
     credentials: true,
   })
