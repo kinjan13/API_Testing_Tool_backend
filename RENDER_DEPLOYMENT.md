@@ -30,7 +30,7 @@ In the **"Environment Variables"** section, add:
 | `PORT` | `10000` (or leave empty for Render auto-assign) |
 | `SUPABASE_URL` | `https://xxxx.supabase.co` |
 | `SUPABASE_KEY` | `your_service_role_key` |
-| `FRONTEND_URL` | `https://api-testing-tool-frontend-umber.vercel.app/` |
+| `FRONTEND_URL` | `https://kinjan13-api-testing-tool-frontend1.vercel.app/` |
 
 ⚠️ **Important**: Keep `SUPABASE_URL`, `SUPABASE_KEY`, and `FRONTEND_URL` unchanged from your local `.env`
 
